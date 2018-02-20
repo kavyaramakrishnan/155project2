@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import operator
 
 # movies = np.genfromtxt('../project2/data/movies.txt', dtype='str')
-movies_to_id = np.genfromtxt('../project2/data/movies.txt', dtype='str', delimiter="\t", usecols=(0, 1, 3, 7, 16))
+movie_info = np.genfromtxt('../project2/data/movies.txt', dtype='str', delimiter="\t", usecols=(0, 1, 3, 7, 16))
 data = np.loadtxt('../project2/data/data.txt').astype(int)
 train = np.loadtxt('../project2/data/train.txt').astype(int)
 test = np.loadtxt('../project2/data/test.txt').astype(int)
@@ -34,7 +34,6 @@ plt.clf()
 # 2. All ratings of the ten most popular movies 
 
 max_10 = dict(sorted(ratings.iteritems(), key=lambda r: len(r[1]), reverse=True)[:10])
-
 top_ratings = []
 [top_ratings.extend(v) for v in max_10.values()]
 plt.hist(top_ratings, bins=5)
@@ -48,7 +47,6 @@ plt.clf()
 # 3. All ratings of the ten best movies 
 
 best_10 = dict(sorted(ratings.iteritems(), key=lambda r: sum(r[1])/len(r[1]), reverse=True)[:10])
-
 best_ratings = []
 [best_ratings.extend(v) for v in best_10.values()]
 plt.hist(best_ratings, bins=5)
@@ -61,12 +59,12 @@ plt.clf()
 
 # 4. All ratings of movies from three genres of your choice
 
-ids = movies_to_id[:,0].astype(int)
-movie_names = movies_to_id[:,1]
+ids = movie_info[:,0].astype(int)
+movie_names = movie_info[:,1]
 
 # Action:
 
-action = movies_to_id[:,2].astype(int)
+action = movie_info[:,2].astype(int)
 action_movies = dict((k, v) for k, v in zip(ids, action) if v == 1)
 action_ratings_dict = dict((k, ratings[k]) for k in action_movies.keys())
 action_ratings = []
@@ -80,7 +78,7 @@ plt.clf()
 
 # Comedy:
 
-comedy = movies_to_id[:,3].astype(int)
+comedy = movie_info[:,3].astype(int)
 comedy_movies = dict((k, v) for k, v in zip(ids, comedy) if v == 1)
 comedy_ratings_dict = dict((k, ratings[k]) for k in comedy_movies.keys())
 comedy_ratings = []
@@ -94,7 +92,7 @@ plt.clf()
 
 # Romance:
 
-romance = movies_to_id[:,4].astype(int)
+romance = movie_info[:,4].astype(int)
 romance_movies = dict((k, v) for k, v in zip(ids, romance) if v == 1)
 romance_ratings_dict = dict((k, ratings[k]) for k in romance_movies.keys())
 romance_ratings = []
@@ -105,16 +103,3 @@ plt.ylabel('frequency')
 plt.title('Histogram of all ratings of romance movies')
 plt.savefig('romance.png')
 plt.clf()
-
-
-
-
-
-
-
-
-
-
-
-
-
