@@ -11,7 +11,7 @@ movie_info = np.genfromtxt('../data/movies.txt', dtype='str', delimiter="\t", us
 data = np.loadtxt('../data/data.txt').astype(int)
 train = np.loadtxt('../data/train.txt').astype(int)
 test = np.loadtxt('../data/test.txt').astype(int)
-
+print movie_info
 ratings = {}
 for user, movie_id, rating in data:
     if movie_id in ratings:
@@ -27,7 +27,7 @@ plt.hist(all_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings in the MovieLens Dataset')
-plt.savefig('all_4a.png')
+plt.savefig('Basic-all_4a.png')
 plt.clf()
 
 
@@ -40,7 +40,7 @@ plt.hist(top_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of the ten most popular movies')
-plt.savefig('popular_4b.png')
+plt.savefig('Basic-popular_4b.png')
 plt.clf()
 
 
@@ -53,7 +53,7 @@ plt.hist(best_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of the ten best movies')
-plt.savefig('best_4c.png')
+plt.savefig('Basic-best_4c.png')
 plt.clf()
 
 
@@ -73,7 +73,7 @@ plt.hist(action_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of action movies')
-plt.savefig('action_4di.png')
+plt.savefig('Basic-action_4di.png')
 plt.clf()
 
 # Comedy:
@@ -87,7 +87,7 @@ plt.hist(comedy_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of comedies')
-plt.savefig('comedy_4dii.png')
+plt.savefig('Basic-comedy_4dii.png')
 plt.clf()
 
 # Romance:
@@ -101,5 +101,5 @@ plt.hist(romance_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of romance movies')
-plt.savefig('romance_4diii.png')
+plt.savefig('Basic-romance_4diii.png')
 plt.clf()

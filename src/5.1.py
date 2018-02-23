@@ -9,24 +9,26 @@ import sys
 import operator
         
 def main():
-    movie_info = np.genfromtxt('../data/movies.txt', dtype='str', delimiter="\t", usecols=(0, 1, 3, 7, 16))
+    #movie_info = np.genfromtxt('../data/movies.txt', dtype="str", delimiter="\t", usecols=(0, 1, 3, 7, 16))
+    movie_info = np.loadtxt('../data/movies.txt', dtype="str", delimiter="\t", usecols=(0, 1, 3, 7, 16))
     data = np.loadtxt('../data/data.txt').astype(int)
     Y_train = np.loadtxt('../data/train.txt').astype(int)
     Y_test = np.loadtxt('../data/test.txt').astype(int)
-
+    print(movie_info)
     
     M = max(max(Y_train[:,0]), max(Y_test[:,0])).astype(int) # users
     N = max(max(Y_train[:,1]), max(Y_test[:,1])).astype(int) # movies
     print("Factorizing with ", M, " users, ", N, " movies.")
     
-    reg = 0.2
+    reg = 0.0
     eta = 0.03 # learning rate
+    k = 20
     E_in = []
     E_out = []
 
     # Use to compute Ein and Eout
 
-    U,V, err = train_model(M, N, 20, eta, reg, Y_train)
+    U,V, err = train_model(M, N, k, eta, reg, Y_train)
     e_out = get_err(U, V, Y_test)
     print("e_in", err)
     print("e_out", e_out)
@@ -114,28 +116,52 @@ def main():
     action = (movie_info[:,2].astype(int))[:90000]
     action_movies = dict((k, v) for k, v in zip(ids, action) if v == 1)
     action_ratings_dict = dict((k, ratings[k]) for k in action_movies.keys())
-    x_best = []
-    y_best = []
+    x_action = []
+    y_action = []
     action_ratings = []
-    action_ratings = action_ratings.keys()
+    action_ratings = action_ratings_dict.keys()
+
+    comedy = movie_info[:,3].astype(int)
+    comedy_movies = dict((k, v) for k, v in zip(ids, comedy) if v == 1)
+    comedy_ratings_dict = dict((k, ratings[k]) for k in comedy_movies.keys())
+    x_comedy = []
+    y_comedy = []
+    comedy_ratings = []
+    comedy_ratings = comedy_ratings_dict.keys()
+
+    romance = movie_info[:,4].astype(int)
+    romance_movies = dict((k, v) for k, v in zip(ids, romance) if v == 1)
+    romance_ratings_dict = dict((k, ratings[k]) for k in romance_movies.keys())
+    x_romance = []
+    y_romance = []
+    romance_ratings = []
+    romance_ratings = romance_ratings_dict.keys()
+
     count = 0
     for i in v_proj:
         count += 1
         if count in action_ratings:
-            x_best.append(i[0])
-            y_best.append(i[1])
+            x_action.append(i[0])
+            y_action.append(i[1])
 
-    plt.scatter(x_best, y_best)
+        if count in comedy_ratings:
+            x_comedy.append(i[0])
+            y_comedy.append(i[1])
+
+        if count in romance_ratings:
+            x_romance.append(i[0])
+            y_romance.append(i[1])
+
+    plt.scatter(x_action[2:12], y_action[2:12])
+    plt.scatter(x_comedy[2:12], y_comedy[2:12], color = 'orange')
+    plt.scatter(x_romance[2:12], y_romance[2:12], color = 'green')
     plt.savefig('action.png')
     plt.clf()
     
 
-    # # Comedy:
+    # Comedy:
 
-    # comedy = movie_info[:,3].astype(int)
-    # comedy_movies = dict((k, v) for k, v in zip(ids, comedy) if v == 1)
-    # comedy_ratings_dict = dict((k, ratings[k]) for k in comedy_movies.keys())
-    # comedy_ratings = []
+    
     # [comedy_ratings.extend(v) for v in comedy_ratings_dict.values()]
     # plt.hist(comedy_ratings, bins=5)
     # plt.xlabel('ratings')
@@ -146,17 +172,17 @@ def main():
 
     # # Romance:
 
-    # romance = movie_info[:,4].astype(int)
-    # romance_movies = dict((k, v) for k, v in zip(ids, romance) if v == 1)
-    # romance_ratings_dict = dict((k, ratings[k]) for k in romance_movies.keys())
-    # romance_ratings = []
-    # [romance_ratings.extend(v) for v in romance_ratings_dict.values()]
-    # plt.hist(romance_ratings, bins=5)
-    # plt.xlabel('ratings')
-    # plt.ylabel('frequency')
-    # plt.title('Histogram of all ratings of romance movies')
-    # plt.savefig('romance_51diii.png')
-    # plt.clf()
+    romance = movie_info[:,4].astype(int)
+    romance_movies = dict((k, v) for k, v in zip(ids, romance) if v == 1)
+    romance_ratings_dict = dict((k, ratings[k]) for k in romance_movies.keys())
+    romance_ratings = []
+    [romance_ratings.extend(v) for v in romance_ratings_dict.values()]
+    plt.hist(romance_ratings, bins=5)
+    plt.xlabel('ratings')
+    plt.ylabel('frequency')
+    plt.title('Histogram of all ratings of romance movies')
+    plt.savefig('romance_51diii.png')
+    plt.clf()
 
 
 
