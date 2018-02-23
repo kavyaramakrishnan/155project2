@@ -27,33 +27,33 @@ plt.hist(all_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings in the MovieLens Dataset')
-plt.savefig('all.png')
+plt.savefig('all_4a.png')
 plt.clf()
 
 
 # 2. All ratings of the ten most popular movies 
 
-max_10 = dict(sorted(ratings.iteritems(), key=lambda r: len(r[1]), reverse=True)[:10])
+max_10 = dict(sorted(ratings.items(), key=lambda r: len(r[1]), reverse=True)[:10])
 top_ratings = []
 [top_ratings.extend(v) for v in max_10.values()]
 plt.hist(top_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of the ten most popular movies')
-plt.savefig('popular.png')
+plt.savefig('popular_4b.png')
 plt.clf()
 
 
 # 3. All ratings of the ten best movies 
 
-best_10 = dict(sorted(ratings.iteritems(), key=lambda r: sum(r[1])/len(r[1]), reverse=True)[:10])
+best_10 = dict(sorted(ratings.items(), key=lambda r: sum(r[1])/len(r[1]), reverse=True)[:10])
 best_ratings = []
 [best_ratings.extend(v) for v in best_10.values()]
 plt.hist(best_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of the ten best movies')
-plt.savefig('best.png')
+plt.savefig('best_4c.png')
 plt.clf()
 
 
@@ -73,7 +73,7 @@ plt.hist(action_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of action movies')
-plt.savefig('action.png')
+plt.savefig('action_4di.png')
 plt.clf()
 
 # Comedy:
@@ -87,7 +87,7 @@ plt.hist(comedy_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of comedies')
-plt.savefig('comedy.png')
+plt.savefig('comedy_4dii.png')
 plt.clf()
 
 # Romance:
@@ -101,5 +101,5 @@ plt.hist(romance_ratings, bins=5)
 plt.xlabel('ratings')
 plt.ylabel('frequency')
 plt.title('Histogram of all ratings of romance movies')
-plt.savefig('romance.png')
+plt.savefig('romance_4diii.png')
 plt.clf()

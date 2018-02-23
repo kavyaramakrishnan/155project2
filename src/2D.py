@@ -27,8 +27,11 @@ def main():
     # Use to compute Ein and Eout
 
     U,V, err = train_model(M, N, 20, eta, reg, Y_train)
-    
-    model.score(Y_test)
+    e_out = get_err(U, V, Y_test)
+    print("e_in", err)
+    print("e_out", e_out)
+
+    #model.score(Y_test)
     a, sigma, b = np.linalg.svd(V)
     print(V.shape, a.shape)
     a_t =  a #np.transpose(a)
@@ -108,7 +111,7 @@ def main():
 
     # Action:
 
-    action = movie_info[:,2].astype(int)
+    action = (movie_info[:,2].astype(int))[:90000]
     action_movies = dict((k, v) for k, v in zip(ids, action) if v == 1)
     action_ratings_dict = dict((k, ratings[k]) for k in action_movies.keys())
     x_best = []
