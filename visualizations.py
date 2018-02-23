@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 import operator
 
 # movies = np.genfromtxt('../project2/data/movies.txt', dtype='str')
-movie_info = np.genfromtxt('../project2/data/movies.txt', dtype='str', delimiter="\t", usecols=(0, 1, 3, 7, 16))
-data = np.loadtxt('../project2/data/data.txt').astype(int)
-train = np.loadtxt('../project2/data/train.txt').astype(int)
-test = np.loadtxt('../project2/data/test.txt').astype(int)
+movie_info = np.genfromtxt('../data/movies.txt', dtype='str', delimiter="\t", usecols=(0, 1, 3, 7, 16))
+data = np.loadtxt('../data/data.txt').astype(int)
+train = np.loadtxt('../data/train.txt').astype(int)
+test = np.loadtxt('../data/test.txt').astype(int)
 
 ratings = {}
 for user, movie_id, rating in data:
