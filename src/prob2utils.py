@@ -3,7 +3,7 @@
 
 import numpy as np
 
-def grad_U(Ui, Yij, Vj, reg, eta):
+def grad_U(Ui, Yij, Vj, reg, eta, UBiasi = 0, VBiasj = 0):
     """
     Takes as input Ui (the ith row of U), a training point Yij, the column
     vector Vj (jth column of V^T), reg (the regularization parameter lambda),
@@ -12,9 +12,9 @@ def grad_U(Ui, Yij, Vj, reg, eta):
     Returns the gradient of the regularized loss function with
     respect to Ui multiplied by eta.
     """
-    return (1-reg*eta)*Ui + eta * Vj * (Yij - np.dot(Ui,Vj))     
+    return (1-reg*eta)*Ui + eta * Vj * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)     
 
-def grad_V(Vj, Yij, Ui, reg, eta):
+def grad_V(Vj, Yij, Ui, reg, eta, UBiasi = 0, VBiasj = 0):
     """
     Takes as input the column vector Vj (jth column of V^T), a training point Yij,
     Ui (the ith row of U), reg (the regularization parameter lambda),
@@ -23,7 +23,29 @@ def grad_V(Vj, Yij, Ui, reg, eta):
     Returns the gradient of the regularized loss function with
     respect to Vj multiplied by eta.
     """
-    return (1-reg*eta)*Vj + eta * Ui * (Yij - np.dot(Ui,Vj))
+    return (1-reg*eta)*Vj + eta * Ui * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)
+
+def grad_UBias(Ui, Yij, Vj, reg, eta, UBiasi, VBiasj):
+    """
+    Takes as input Ui (the ith row of U), a training point Yij, the column
+    vector Vj (jth column of V^T), reg (the regularization parameter lambda),
+    and eta (the learning rate).
+
+    Returns the gradient of the regularized loss function with
+    respect to Ui multiplied by eta.
+    """
+    return (1-reg*eta)*UBiasi + eta * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)     
+
+def grad_VBias(Vj, Yij, Ui, reg, eta, UBiasi, VBiasj):
+    """
+    Takes as input the column vector Vj (jth column of V^T), a training point Yij,
+    Ui (the ith row of U), reg (the regularization parameter lambda),
+    and eta (the learning rate).
+
+    Returns the gradient of the regularized loss function with
+    respect to Vj multiplied by eta.
+    """
+    return (1-reg*eta)*VBiasj + eta * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)
 
 def get_err(U, V, Y, reg=0.0):
     """
@@ -40,6 +62,31 @@ def get_err(U, V, Y, reg=0.0):
     err = 0.0
     for (i,j,Yij) in Y:
         err += 0.5 *(Yij - np.dot(U[i-1], V[:,j-1]))**2
+    # Add error penalty due to regularization if regularization
+    # parameter is nonzero
+    if reg != 0:
+        U_frobenius_norm = np.linalg.norm(U, ord='fro')
+        V_frobenius_norm = np.linalg.norm(V, ord='fro')
+        err += 0.5 * reg * (U_frobenius_norm ** 2)
+        err += 0.5 * reg * (V_frobenius_norm ** 2)
+    # Return the mean of the regularized error
+    return err / float(len(Y))
+
+def get_err_bias(U, V, UBias, VBias, Y, reg=0.0):
+    """
+    Takes as input a matrix Y of triples (i, j, Y_ij) where i is the index of a user,
+    j is the index of a movie, and Y_ij is user i's rating of movie j and
+    user/movie matrices U and V.
+
+    Returns the mean regularized squared-error of predictions made by
+    estimating Y_{ij} as the dot product of the ith row of U and the jth column of V^T.
+    """
+    # Compute mean squared error on each data point in Y; include
+    # regularization penalty in error calculations.
+    # We first compute the total squared squared error
+    err = 0.0
+    for (i,j,Yij) in Y:
+        err += 0.5 *(Yij - np.dot(U[i-1], V[:,j-1]) - UBias[i-1] - VBias[:,j-1])**2
     # Add error penalty due to regularization if regularization
     # parameter is nonzero
     if reg != 0:
@@ -93,3 +140,56 @@ def train_model(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
         elif before_E_in - E_in < eps * delta:
             break
     return (U, V, get_err(U, V, Y))
+
+def train_model_bias(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
+    """
+    Given a training data matrix Y containing rows (i, j, Y_ij)
+    where Y_ij is user i's rating on movie j, learns an
+    M x K matrix U and N x K matrix V such that rating Y_ij is approximated
+    by (UV)_ij.
+
+    Uses a learning rate of <eta> and regularization of <reg>. Stops after
+    <max_epochs> epochs, or once the magnitude of the decrease in regularized
+    MSE between epochs is smaller than a fraction <eps> of the decrease in
+    MSE after the first epoch.
+
+    Returns a tuple (U, V, err) consisting of U, V, and the unregularized MSE
+    of the model.
+    """
+    # Initialize U, V  
+    U = np.random.random((M,K)) - 0.5
+    V = np.random.random((K,N)) - 0.5
+
+    # Initialize UBias, VBias 
+    UBias = np.random.random((M, 1)) - 0.5
+    VBias = np.random.random((1, N)) - 0.5
+
+    size = Y.shape[0]
+    delta = None
+    indices = np.arange(size)    
+    for epoch in range(max_epochs):
+        # Run an epoch of SGD
+        before_E_in = get_err_bias(U, V, UBias, VBias, Y, reg)
+        np.random.shuffle(indices)
+        for ind in indices:
+            (i,j, Yij) = Y[ind]
+            # Update U[i], V[j]
+            U[i-1] = grad_U(U[i-1], Yij, V[:,j-1], reg, eta, UBias[i-1], VBias[:,j-1])
+            V[:,j-1] = grad_V(V[:,j-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
+
+            UBias[i-1] = grad_UBias(U[i-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
+            VBias[:,j-1] = grad_VBias(V[:,j-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
+        # At end of epoch, print E_in
+        E_in = get_err_bias(U, V, UBias, VBias, Y, reg)
+        print("Epoch %s, E_in (regularized MSE): %s"%(epoch + 1, E_in))
+
+        # Compute change in E_in for first epoch
+        if epoch == 0:
+            delta = before_E_in - E_in
+
+        # If E_in doesn't decrease by some fraction <eps>
+        # of the initial decrease in E_in, stop early            
+        elif before_E_in - E_in < eps * delta:
+            break
+    return (U, V, UBias, VBias, get_err_bias(U, V, UBias, VBias, Y))
+
