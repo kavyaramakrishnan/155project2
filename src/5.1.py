@@ -167,7 +167,7 @@ def main():
     plt.scatter(x_action[2:12], y_action[2:12])
     plt.scatter(x_comedy[2:12], y_comedy[2:12], color = 'orange')
     plt.scatter(x_romance[2:12], y_romance[2:12], color = 'green')
-    plt.savefig('Standard-genre.png')
+    plt.savefig('Standard-genres.png')
     plt.clf()
     
 
