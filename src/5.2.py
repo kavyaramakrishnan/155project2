@@ -7,6 +7,7 @@ from prob2utils import train_model_bias, get_err_bias
 import math
 import sys
 import operator
+from adjustText import adjust_text
         
 def main():
     #movie_info = np.genfromtxt('../data/movies.txt', dtype="str", delimiter="\t", usecols=(0, 1, 3, 7, 16))
@@ -68,8 +69,15 @@ def main():
 
 
     # 1. 10 movies of our choice from the MovieLens dataset 
-
+    
     plt.scatter(x[2:12], y[2:12])
+    texts = []
+    for j, txt in enumerate(movie_names[2:12]):
+        texts.append(plt.text(x[2:12][j], y[2:12][j], txt))
+    adjust_text(texts)
+    plt.xlabel('Feature 0')
+    plt.ylabel('Feature 1')
+    plt.title('10 Movies of Our Choice')
     plt.savefig('Bias-choice.png')
     plt.clf()
 
@@ -92,8 +100,14 @@ def main():
     print(movie_title)
 
     plt.scatter(x_pop, y_pop)
+    texts = []
     for j, txt in enumerate(movie_title):
-        plt.annotate(txt, (x_pop[j], y_pop[j]))
+        texts.append(plt.text(x_pop[j], y_pop[j], txt))
+        #plt.annotate(txt, (x_pop[j], y_pop[j]))
+    adjust_text(texts)
+    plt.xlabel('Feature 0')
+    plt.ylabel('Feature 1')
+    plt.title('10 Most Popular Movies')
     plt.savefig('Bias-popular.png')
     plt.clf()
 
@@ -113,7 +127,14 @@ def main():
             x_best.append(i[0])
             y_best.append(i[1])
 
+    for j, txt in enumerate(movie_title):
+        plt.annotate(txt, (x_best[j], y_best[j]))
     plt.scatter(x_best, y_best)
+    plt.xlabel('Feature 0')
+    plt.ylabel('Feature 1')
+    plt.title('10 Best Movies')
+    plt.xlabel("Feature 0")
+    plt.ylabel("Feature 1")
     plt.savefig('Bias-best.png')
     plt.clf()
 
@@ -164,9 +185,11 @@ def main():
             x_romance.append(i[0])
             y_romance.append(i[1])
 
-    plt.scatter(x_action[2:12], y_action[2:12])
-    plt.scatter(x_comedy[2:12], y_comedy[2:12], color = 'orange')
-    plt.scatter(x_romance[2:12], y_romance[2:12], color = 'green')
+    plt.scatter(x_action[2:12], y_action[2:12], label = "Action")
+    plt.scatter(x_comedy[2:12], y_comedy[2:12], color = 'orange', label = "Comedy")
+    plt.scatter(x_romance[2:12], y_romance[2:12], color = 'green', label = "Romance")
+    plt.legend()
+    plt.title("Three Genres")
     plt.savefig('Bias-genres.png')
     plt.clf()
     
