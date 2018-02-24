@@ -3,7 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from prob2utils import train_model, get_err
+from prob2utils import train_model_bias, get_err_bias
 import math
 import sys
 import operator
@@ -28,8 +28,8 @@ def main():
 
     # Use to compute Ein and Eout
 
-    U,V, err = train_model(M, N, k, eta, reg, Y_train)
-    e_out = get_err(U, V, Y_test)
+    U, V, UBias, VBias, err = train_model_bias(M, N, k, eta, reg, Y_train)
+    e_out = get_err(U, V, UBias, VBias, Y_test)
     print("e_in", err)
     print("e_out", e_out)
 
@@ -70,7 +70,7 @@ def main():
     # 1. 10 movies of our choice from the MovieLens dataset 
 
     plt.scatter(x[2:12], y[2:12])
-    plt.savefig('Standard-choice.png')
+    plt.savefig('Bias-choice.png')
     plt.clf()
 
     # 2. All ratings of the ten most popular movies 
@@ -94,7 +94,7 @@ def main():
     plt.scatter(x_pop, y_pop)
     for j, txt in enumerate(movie_title):
         plt.annotate(txt, (x[j], y[j]))
-    plt.savefig('Standard-popular.png')
+    plt.savefig('Bias-popular.png')
     plt.clf()
 
 
@@ -114,7 +114,7 @@ def main():
             y_best.append(i[1])
 
     plt.scatter(x_best, y_best)
-    plt.savefig('Standard-best.png')
+    plt.savefig('Bias-best.png')
     plt.clf()
 
 
@@ -167,7 +167,7 @@ def main():
     plt.scatter(x_action[2:12], y_action[2:12])
     plt.scatter(x_comedy[2:12], y_comedy[2:12], color = 'orange')
     plt.scatter(x_romance[2:12], y_romance[2:12], color = 'green')
-    plt.savefig('Standard-genre.png')
+    plt.savefig('Bias-genres.png')
     plt.clf()
     
 
