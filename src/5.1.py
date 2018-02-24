@@ -59,6 +59,14 @@ def main():
 
     print(v_proj.shape)
 
+
+    # Setup
+
+    ids = movie_info[:,0].astype(int)
+    movie_names = movie_info[:,1]
+
+
+
     # 1. 10 movies of our choice from the MovieLens dataset 
 
     plt.scatter(x[2:12], y[2:12])
@@ -72,6 +80,7 @@ def main():
     y_pop = []
     top_ratings = []
     top_ratings = max_10.keys()
+    movie_title = []
     print(top_ratings)
     counter = 0
     for i in v_proj:
@@ -79,8 +88,12 @@ def main():
         if counter in top_ratings:
             x_pop.append(i[0])
             y_pop.append(i[1])
+            movie_title.append(movie_names[counter])
+    print(movie_title)
 
     plt.scatter(x_pop, y_pop)
+    for j, txt in enumerate(movie_title):
+        plt.annotate(txt, (x[j], y[j]))
     plt.savefig('popular.png')
     plt.clf()
 
@@ -105,15 +118,14 @@ def main():
     plt.clf()
 
 
-    # 4. All ratings of movies from three genres of your choice
+    # 4. 10 ratings of movies from three genres of your choice
 
 
     ids = movie_info[:,0].astype(int)
     movie_names = movie_info[:,1]
 
-    # Action:
 
-    action = (movie_info[:,2].astype(int))[:90000]
+    action = (movie_info[:,2].astype(int))
     action_movies = dict((k, v) for k, v in zip(ids, action) if v == 1)
     action_ratings_dict = dict((k, ratings[k]) for k in action_movies.keys())
     x_action = []
@@ -158,36 +170,6 @@ def main():
     plt.savefig('action.png')
     plt.clf()
     
-
-    # Comedy:
-
-    
-    # [comedy_ratings.extend(v) for v in comedy_ratings_dict.values()]
-    # plt.hist(comedy_ratings, bins=5)
-    # plt.xlabel('ratings')
-    # plt.ylabel('frequency')
-    # plt.title('Histogram of all ratings of comedies')
-    # plt.savefig('comedy_51dii.png')
-    # plt.clf()
-
-    # # Romance:
-
-    romance = movie_info[:,4].astype(int)
-    romance_movies = dict((k, v) for k, v in zip(ids, romance) if v == 1)
-    romance_ratings_dict = dict((k, ratings[k]) for k in romance_movies.keys())
-    romance_ratings = []
-    [romance_ratings.extend(v) for v in romance_ratings_dict.values()]
-    plt.hist(romance_ratings, bins=5)
-    plt.xlabel('ratings')
-    plt.ylabel('frequency')
-    plt.title('Histogram of all ratings of romance movies')
-    plt.savefig('romance_51diii.png')
-    plt.clf()
-
-
-
-
-   
 
 if __name__ == "__main__":
     main()
