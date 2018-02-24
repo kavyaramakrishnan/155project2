@@ -4,6 +4,9 @@
 import numpy as np
 
 def grad_U(Ui, Yij, Vj, reg, eta, UBiasi = 0, VBiasj = 0):
+    #print(UBiasi)
+    #print(VBiasj)
+    #print("-")
     """
     Takes as input Ui (the ith row of U), a training point Yij, the column
     vector Vj (jth column of V^T), reg (the regularization parameter lambda),
@@ -34,7 +37,9 @@ def grad_UBias(Ui, Yij, Vj, reg, eta, UBiasi, VBiasj):
     Returns the gradient of the regularized loss function with
     respect to Ui multiplied by eta.
     """
-    return (1-reg*eta)*UBiasi + eta * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)     
+
+    return eta * ((reg * UBiasi) - (2. * (Yij - np.dot(UBiasi,VBiasj) - UBiasi - VBiasj)))
+    #return (1-reg*eta)*UBiasi + eta * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)     
 
 def grad_VBias(Vj, Yij, Ui, reg, eta, UBiasi, VBiasj):
     """
@@ -45,7 +50,9 @@ def grad_VBias(Vj, Yij, Ui, reg, eta, UBiasi, VBiasj):
     Returns the gradient of the regularized loss function with
     respect to Vj multiplied by eta.
     """
-    return (1-reg*eta)*VBiasj + eta * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)
+
+    return eta * ((reg * VBiasj) - (2. * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)))
+    #return (1-reg*eta)*VBiasj + eta * (Yij - np.dot(Ui,Vj) - UBiasi - VBiasj)
 
 def get_err(U, V, Y, reg=0.0):
     """
@@ -164,6 +171,11 @@ def train_model_bias(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
     UBias = np.random.random((M, 1)) - 0.5
     VBias = np.random.random((1, N)) - 0.5
 
+    #print(U.shape)
+    #print(V.shape)
+    #print(UBias)
+    #print(VBias)
+
     size = Y.shape[0]
     delta = None
     indices = np.arange(size)    
@@ -174,11 +186,12 @@ def train_model_bias(M, N, K, eta, reg, Y, eps=0.0001, max_epochs=300):
         for ind in indices:
             (i,j, Yij) = Y[ind]
             # Update U[i], V[j]
+            #print((i, j))
             U[i-1] = grad_U(U[i-1], Yij, V[:,j-1], reg, eta, UBias[i-1], VBias[:,j-1])
             V[:,j-1] = grad_V(V[:,j-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
 
-            UBias[i-1] = grad_UBias(U[i-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
-            VBias[:,j-1] = grad_VBias(V[:,j-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
+            UBias[i-1] -= grad_UBias(U[i-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
+            VBias[:,j-1] -= grad_VBias(V[:,j-1], Yij, U[i-1], reg, eta, UBias[i-1], VBias[:,j-1]);
         # At end of epoch, print E_in
         E_in = get_err_bias(U, V, UBias, VBias, Y, reg)
         print("Epoch %s, E_in (regularized MSE): %s"%(epoch + 1, E_in))

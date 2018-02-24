@@ -29,7 +29,7 @@ def main():
     # Use to compute Ein and Eout
 
     U, V, UBias, VBias, err = train_model_bias(M, N, k, eta, reg, Y_train)
-    e_out = get_err(U, V, UBias, VBias, Y_test)
+    e_out = get_err_bias(U, V, UBias, VBias, Y_test)
     print("e_in", err)
     print("e_out", e_out)
 
