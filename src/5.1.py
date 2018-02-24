@@ -93,7 +93,7 @@ def main():
 
     plt.scatter(x_pop, y_pop)
     for j, txt in enumerate(movie_title):
-        plt.annotate(txt, (x[j], y[j]))
+        plt.annotate(txt, (x_pop[j], y_pop[j]))
     plt.savefig('Standard-popular.png')
     plt.clf()
 
